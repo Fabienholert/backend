@@ -3,8 +3,8 @@ const fs = require("fs");
 
 exports.createBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
-  delete bookObject._id;
-  delete bookObject._userId;
+  delete bookObject.id;
+  delete bookObject.userId;
   const book = new Book({
     ...bookObject,
     userId: req.auth.userId,
@@ -81,3 +81,7 @@ exports.getAllBooks = (req, res, next) => {
     .then((books) => res.status(200).json(books))
     .catch((error) => res.status(400).json({ error }));
 };
+
+exports.rateBook = (req, res, next) => {};
+
+exports.getBestRating = (req, res, next) => {};
