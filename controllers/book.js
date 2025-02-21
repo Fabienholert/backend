@@ -1,4 +1,5 @@
 const Book = require("../models/Book.js");
+const fs = require("fs");
 
 exports.createBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
@@ -22,15 +23,51 @@ exports.createBook = (req, res, next) => {
 };
 
 exports.modifyBook = (req, res, next) => {
-  Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
-    .then(() => res.status(200).json({ message: "livre modifié !" }))
-    .catch((error) => res.status(400).json({ error }));
+  const bookObject = req.file
+    ? {
+        ...JSON.parse(req.body.book),
+        imageUrl: `${req.protocol}://${req.get("host")}/images/${
+          req.file.filename
+        }`,
+      }
+    : { ...req.body };
+
+  delete bookObject._userId;
+  Book.findOne({ _id: req.params.id })
+    .then((book) => {
+      if (book.userId != req.auth.userId) {
+        res.status(401).json({ message: "Not authorized" });
+      } else {
+        Book.updateOne(
+          { _id: req.params.id },
+          { ...bookObject, _id: req.params.id }
+        )
+          .then(() => res.status(200).json({ message: "Livre modifié!" }))
+          .catch((error) => res.status(401).json({ error }));
+      }
+    })
+    .catch((error) => {
+      res.status(400).json({ error });
+    });
 };
 
 exports.deleteBook = (req, res, next) => {
-  Book.deletOne({ _id: req.paramas.id })
-    .then(() => res.status(200).json({ message: "livre supprimé !" }))
-    .catch((error) => res.status(404).json({ error }));
+  Book.findOne({ _id: req.params.id })
+    .then((book) => {
+      if (book.userId != req.auth.userId) {
+        res.status(401).json({ message: "Non autorisé" });
+      } else {
+        const filename = book.imageUrl.split("/images/")[1];
+        fs.unlink(`images/${filename}`, () => {
+          Book.deleteOne({ _id: req.params.id })
+            .then(() => res.status(200).json({ message: "livre supprimé !" }))
+            .catch((error) => res.status(400).json({ error }));
+        });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({ error });
+    });
 };
 
 exports.getOneBook = (req, res, next) => {
