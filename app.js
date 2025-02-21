@@ -1,7 +1,8 @@
 const express = require("express");
-
 const app = express();
 const mongoose = require("mongoose");
+
+const Book = require("./models/Book.js");
 
 mongoose
   .connect(
@@ -20,6 +21,19 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
   );
+  next();
+});
+app.use(express.json());
+
+app.post("/api/books", (req, res, next) => {
+  delete req.body._id;
+  const book = new Book({
+    ...req.body,
+  });
+  book
+    .save()
+    .then(() => res.status(201).json({ message: "livre enregistré !" }))
+    .catch((error) => res.status(400).json({ error }));
   next();
 });
 
