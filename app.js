@@ -1,8 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const app = express();
-
 const path = require("path");
+const app = express();
 
 const bookRoutes = require("./routes/book.js");
 const userRoutes = require("./routes/user.js");
@@ -24,6 +23,7 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
   );
+  next();
 });
 
 app.use(express.json());
