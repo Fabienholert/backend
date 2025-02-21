@@ -22,7 +22,7 @@ exports.signup = (req, res, next) => {
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
-      if (user === null) {
+      if (!user) {
         res
           .status(401)
           .json({ message: "paire utilisateur/ mot de passe incorrecte !" });
@@ -31,7 +31,7 @@ exports.login = (req, res, next) => {
           .compare(req.body.password, user.password)
           .then((valid) => {
             if (!valid) {
-              res.status(401).json({
+              return res.status(401).json({
                 message: "paire utilisateur/ mot de passe incorrecte !",
               });
             } else {
