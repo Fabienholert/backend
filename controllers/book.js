@@ -22,6 +22,18 @@ exports.createBook = (req, res, next) => {
     });
 };
 
+exports.getAllBooks = (req, res, next) => {
+  Book.find()
+    .then((books) => res.status(200).json(books))
+    .catch((error) => res.status(400).json({ error }));
+};
+
+exports.getOneBook = (req, res, next) => {
+  Book.findOne({ _id: req.params.id })
+    .then((book) => res.status(200).json(book))
+    .catch((error) => res.status(404).json({ error }));
+};
+
 exports.modifyBook = (req, res, next) => {
   const bookObject = req.file
     ? {
@@ -42,7 +54,7 @@ exports.modifyBook = (req, res, next) => {
           { _id: req.params.id },
           { ...bookObject, _id: req.params.id }
         )
-          .then(() => res.status(200).json({ message: "Livre modifié!" }))
+          .then(() => res.status(200).json({ message: "livre modifié!" }))
           .catch((error) => res.status(401).json({ error }));
       }
     })
@@ -70,18 +82,20 @@ exports.deleteBook = (req, res, next) => {
     });
 };
 
-exports.getOneBook = (req, res, next) => {
-  Book.findOne({ _id: req.params.id })
-    .then((book) => res.status(200).json(book))
-    .catch((error) => res.status(404).json({ error }));
-};
-
-exports.getAllBooks = (req, res, next) => {
-  Book.find()
-    .then((books) => res.status(200).json(books))
+exports.rateBook = (req, res, next) => {
+  const rating = req.body.rating;
+  const bookId = req.params.id;
+  Book.findOne({ _id: bookId })
+    .then((book) => {
+      const newRating = (book.rating + rating) / (book.nbRating + 1);
+      Book.updateOne(
+        { _id: bookId },
+        { rating: newRating, nbRating: book.nbRating + 1 }
+      )
+        .then(() => res.status(200).json({ message: "Note enregistrée !" }))
+        .catch((error) => res.status(400).json({ error }));
+    })
     .catch((error) => res.status(400).json({ error }));
 };
-
-exports.rateBook = (req, res, next) => {};
 
 exports.getBestRating = (req, res, next) => {};
