@@ -5,7 +5,6 @@ module.exports = async (req, res, next) => {
   if (!req.file) {
     return next();
   }
-
   try {
     const filePath = req.file.path;
     const fileName = req.file.filename;
