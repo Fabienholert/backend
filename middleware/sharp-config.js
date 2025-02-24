@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
     const outputFilePath = `images/optimized-${fileName}`;
 
     await sharp(filePath)
-      .resize(800, 600, {
+      .resize(80, 60, {
         fit: "inside",
         withoutEnlargement: true,
       })
