@@ -123,7 +123,9 @@ exports.rateBook = (req, res, next) => {
         (sum, rating) => sum + rating.grade,
         0
       );
-      book.averageRating = totalRatings / book.ratings.length;
+      book.averageRating = Number(
+        (totalRatings / book.ratings.length).toFixed(2)
+      );
       return book.save();
     })
     .then((updatedBook) => {
