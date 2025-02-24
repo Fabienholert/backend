@@ -15,7 +15,7 @@ module.exports = async (req, res, next) => {
         fit: "inside",
         withoutEnlargement: true,
       })
-      .webp({ quality: 80 })
+      .jpeg({ quality: 80 })
       .toFile(outputFilePath);
 
     fs.unlink(filePath, (err) => {
