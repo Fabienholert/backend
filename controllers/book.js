@@ -124,7 +124,6 @@ exports.rateBook = (req, res, next) => {
         0
       );
       book.averageRating = totalRatings / book.ratings.length;
-
       return book.save();
     })
     .then((updatedBook) => {
