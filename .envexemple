@@ -1,0 +1,5 @@
+#données sensibles
+
+  COMPTE_MONGODB = defaut
+
+  TOKEN= def
